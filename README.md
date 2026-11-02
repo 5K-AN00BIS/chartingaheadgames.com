@@ -1,15 +1,15 @@
 # chartingaheadgames.com
 
-The Charting Ahead Games website: a home page, the Emberhold privacy policy, and AdMob's `app-ads.txt`. Plain HTML and CSS, no build step. Hosted on GitHub Pages.
+The Charting Ahead Games website: a home page, the Emberstead privacy policy, and AdMob's `app-ads.txt`. Plain HTML and CSS, no build step. Hosted on GitHub Pages.
 
 | File | What it's for |
 |---|---|
 | `index.html` | Home page |
-| `privacy.html` | Emberhold privacy policy. Play Console needs this URL: `https://chartingaheadgames.com/privacy.html` |
-| `app-ads.txt` | Lets AdMob confirm the ads in Emberhold are yours (publisher `pub-7297944809186986`). Must stay at the site root. |
+| `privacy.html` | Emberstead privacy policy. Play Console needs this URL: `https://chartingaheadgames.com/privacy.html` |
+| `app-ads.txt` | Lets AdMob confirm the ads in Emberstead are yours (publisher `pub-7297944809186986`). Must stay at the site root. |
 | `CNAME` | Tells GitHub Pages the custom domain |
 | `.nojekyll` | Serves the files exactly as they are |
-| `assets/` | Header image and icon (sources live in the Emberhold repo under `native-android/store/brand/`) |
+| `assets/` | Header image and icon (sources live in the game's repo, `Emberhold` (its codename), under `native-android/store/brand/`) |
 
 ## Hosting setup (one time)
 1. **GitHub:** create a public repository (e.g. `chartingaheadgames.com`) and push this folder to its `main` branch.
