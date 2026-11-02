@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Charting Ahead Games developer icon: a route that starts as a dotted trail, curves into a C and breaks out ahead, under a guiding star -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22406f"/><stop offset="1" stop-color="#0e1a30"/></linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.6"><stop offset="0" stop-color="#fff" stop-opacity="0.09"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ember" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc94a"/><stop offset="1" stop-color="#f0641e"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <g fill="none" stroke="#f4e9cf" stroke-opacity="0.07" stroke-width="2">
+    <path d="M0 150 Q256 122 512 150"/><path d="M0 256 Q256 228 512 256"/><path d="M0 362 Q256 334 512 362"/>
+    <path d="M128 0 V512"/><path d="M256 0 V512"/><path d="M384 0 V512"/>
+  </g>
+  <g fill="#ffc94a">
+    <circle cx="344.6" cy="188.1" r="9"/><circle cx="317.1" cy="162.5" r="12"/><circle cx="279" cy="145.6" r="15"/>
+  </g>
+  <path d="M229.2 143.8 A120 120 0 1 0 327 354" fill="none" stroke="url(#ember)" stroke-width="46" stroke-linecap="round"/>
+  <polygon points="375,314 357,389 297,319" fill="#f0641e"/>
+  <path d="M400 94 L407 121 L434 128 L407 135 L400 162 L393 135 L366 128 L393 121 Z" fill="#f4e9cf"/>
+  <circle cx="440" cy="186" r="6" fill="#f4e9cf" fill-opacity="0.6"/>
+</svg>
