@@ -6,6 +6,7 @@ The Charting Ahead Games website: a home page, the Emberstead privacy policy, an
 |---|---|
 | `index.html` | Home page |
 | `privacy.html` | Emberstead privacy policy. Play Console needs this URL: `https://chartingaheadgames.com/privacy.html` |
+| `terms.html` | Emberstead terms of service. Play Console asks traders for this URL on each app: `https://chartingaheadgames.com/terms.html` |
 | `app-ads.txt` | Lets AdMob confirm the ads in Emberstead are yours (publisher `pub-7297944809186986`). Must stay at the site root. |
 | `CNAME` | Tells GitHub Pages the custom domain |
 | `.nojekyll` | Serves the files exactly as they are |
