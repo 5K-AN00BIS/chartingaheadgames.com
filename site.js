@@ -33,11 +33,13 @@
   function layoutTrail() {
     if (!games) return;
     const box = games.getBoundingClientRect(), W = games.clientWidth, H = games.offsetHeight;
-    const marks = [...games.querySelectorAll('.marker')].map(m => { const r = m.getBoundingClientRect(); return [r.left - box.left + r.width / 2, r.top - box.top + r.height * .34]; });
+    const els = [...games.querySelectorAll('.marker')];
+    // the trail runs through the middle of each marker's diamond and ends on top of the last one, where the hiker stops
+    const marks = els.map((m, i) => { const r = m.getBoundingClientRect(); return [r.left - box.left + r.width / 2, r.top - box.top + r.height * (i === els.length - 1 ? .05 : .34)]; });
     if (!marks.length) return;
     const head = games.querySelector('h2'), start = head ? head.getBoundingClientRect().bottom - box.top + (W < 900 ? 52 : 64) : -8;
     const gx = marks[0][0], amp = W < 900 ? 9 : 34, pts = [[gx, start]];
-    let prev = pts[0]; marks.concat([[gx, H + 10]]).forEach((m, i) => { const dy = m[1] - prev[1]; pts.push([gx + amp * (i % 2 ? -1 : 1), prev[1] + dy * .33], [gx - amp * .7 * (i % 2 ? -1 : 1), prev[1] + dy * .68], m); prev = m; });
+    let prev = pts[0]; marks.forEach((m, i) => { const dy = m[1] - prev[1]; pts.push([gx + amp * (i % 2 ? -1 : 1), prev[1] + dy * .33], [gx - amp * .7 * (i % 2 ? -1 : 1), prev[1] + dy * .68], m); prev = m; });
     // a smooth curve through the points
     let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
     for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2; d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`; }

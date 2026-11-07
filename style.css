@@ -106,7 +106,7 @@ main.game { background: none; }
 .card-text .tag { color: var(--g-accent); margin: 10px 0 10px; }
 .card-text .line { margin: 0 0 16px; font-size: 19px; line-height: 1.5; }
 .card-text .status { display: inline-block; margin: 0 14px 12px 0; padding: 5px 12px 4px; border: 2px solid var(--g-accent); color: var(--g-accent); font: 400 22px/1.15 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
-.go { display: inline-block; padding: 7px 38px 6px 14px; background: var(--sun); color: var(--night); font: 400 24px/1.1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%); transition: transform .24s var(--out); }
+.go { display: inline-block; padding: 7px 38px 6px 14px; background: var(--sun); color: var(--night); font: 400 24px/1.1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%); transition: transform .24s var(--out); pointer-events: none; /* a tap on it goes to the card's link underneath */ }
 .game-card:active { transform: scale(.975); box-shadow: 0 10px 20px -12px rgba(3, 9, 18, .8); transition-duration: .1s; }
 @media (hover: hover) and (pointer: fine) {
   .game-card:hover { transform: translateY(-5px) rotate(-.35deg); box-shadow: 0 30px 50px -18px rgba(3, 9, 18, .8); }
