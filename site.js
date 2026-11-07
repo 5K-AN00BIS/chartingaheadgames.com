@@ -7,6 +7,9 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const still = () => reduce.matches;
   const cssScroll = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+  // Older iPhones may lack CSS motion paths (the hiker) or Web Animations (the sparks), so both have a plainer way there too.
+  const offsetOK = !!(window.CSS && CSS.supports && CSS.supports('offset-path', 'path("M0 0L1 1")'));
+  const canAnimate = typeof Element.prototype.animate === 'function';
   root.classList.add('js');
   // Phones only show the pressed look on cards when the page listens for touches.
   addEventListener('touchstart', () => {}, { passive: true });
@@ -24,7 +27,7 @@
   let ink, reveal, hole, hikerEl, table = [], total = 0, restLen = 0, lastLen = -1;
   if (games) {
     const svg = doc.createElementNS(svgNS, 'svg'); svg.setAttribute('class', 'trail-svg'); svg.setAttribute('aria-hidden', 'true');
-    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask" pathLength="1"/><rect class="trail-hole" fill="#000"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
+    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask"/><rect class="trail-hole" fill="#000"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
     games.prepend(svg);
     ink = svg.querySelector('.trail-ink'); reveal = svg.querySelector('.trail-mask'); hole = svg.querySelector('.trail-hole');
     hikerEl = doc.createElement('span'); hikerEl.className = 'hiker'; hikerEl.setAttribute('aria-hidden', 'true'); games.append(hikerEl);
@@ -45,18 +48,20 @@
     for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2; d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`; }
     const svg = ink.ownerSVGElement; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.style.height = H + 'px';
     ink.setAttribute('d', d); reveal.setAttribute('d', d);
-    hikerEl.style.offsetPath = `path("${d}")`;
+    if (offsetOK) hikerEl.style.offsetPath = `path("${d}")`;
     total = ink.getTotalLength(); table = [];
+    reveal.style.strokeDasharray = `${(total + 2).toFixed(1)} ${(total + 2).toFixed(1)}`;
     for (let i = 0; i <= 240; i++) { const l = total * i / 240; table.push([l, ink.getPointAtLength(l).y]); }
     const firstY = marks[0][1] - (W < 900 ? 30 : 40); restLen = (table.find(t => t[1] >= firstY) || table[table.length - 1])[0]; // at rest the hiker stands just above the first marker
     lastLen = -1;
   }
   function trailAt(len, drawTo) {
     if (!games || !total) return;
-    hikerEl.style.offsetDistance = (len / total * 100).toFixed(3) + '%';
     const ft = ink.getPointAtLength(len), hw = hikerEl.offsetWidth, hh = hikerEl.offsetHeight; // keep the line out from between his legs
+    if (offsetOK) hikerEl.style.offsetDistance = (len / total * 100).toFixed(3) + '%';
+    else { hikerEl.style.left = (ft.x - hw * .5).toFixed(1) + 'px'; hikerEl.style.top = (ft.y - hh * .94).toFixed(1) + 'px'; }
     hole.setAttribute('x', (ft.x - hw * .36).toFixed(1)); hole.setAttribute('y', (ft.y - hh * .5).toFixed(1)); hole.setAttribute('width', (hw * .72).toFixed(1)); hole.setAttribute('height', (hh * .56).toFixed(1));
-    reveal.style.strokeDashoffset = (1 - drawTo / total).toFixed(4);
+    reveal.style.strokeDashoffset = (total + 2 - drawTo).toFixed(1);
     if (lastLen >= 0) { const step = Math.floor(len / 13) % 2; hikerEl.dataset.step = step; const a = ink.getPointAtLength(Math.max(0, len - 3)).x, b = ink.getPointAtLength(Math.min(total, len + 3)).x; if (Math.abs(b - a) > .4) hikerEl.dataset.face = b < a ? 'left' : 'right'; }
     lastLen = len;
   }
@@ -87,7 +92,7 @@
   }
   addEventListener('scroll', request, { passive: true });
   addEventListener('resize', settle);
-  reduce.addEventListener('change', settle);
+  if (reduce.addEventListener) reduce.addEventListener('change', settle); else if (reduce.addListener) reduce.addListener(settle);
   if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(settle); settle();
   addEventListener('load', settle);
 
@@ -113,6 +118,14 @@
     for (let i = 0; i < n; i++) {
       const s = doc.createElement('i'); s.className = 'spark s' + (i % 3); b.append(s);
       const a = (-90 + (Math.random() - .5) * 120) * Math.PI / 180, dist = w * (.55 + Math.random() * 1.15), dx = Math.cos(a) * dist, dy = Math.sin(a) * dist, size = .6 + Math.random() * .8;
+      if (!canAnimate) { // older iPhones: the same sparks as a plain CSS transition, flying straight out instead of arcing
+        const ms = Math.round(700 + Math.random() * 650);
+        s.style.margin = '-8.5px 0 0 -8.5px'; s.style.transform = `translate(0, 0) scale(${size})`; void s.offsetWidth;
+        s.style.transition = `transform ${ms}ms cubic-bezier(.2,.75,.35,1), opacity ${ms}ms ease-in`;
+        s.style.transform = `translate(${dx.toFixed(1)}px, ${(dy * .82 + w * .22).toFixed(1)}px) scale(${(size * .3).toFixed(2)}) rotate(120deg)`; s.style.opacity = '0';
+        setTimeout(() => s.remove(), ms + 60);
+        continue;
+      }
       const anim = s.animate([
         { transform: `translate(-50%, -50%) scale(${size})`, opacity: 1 },
         { transform: `translate(calc(-50% + ${(dx * .62).toFixed(1)}px), calc(-50% + ${(dy * .7).toFixed(1)}px)) scale(${size})`, opacity: 1, offset: .5 },
