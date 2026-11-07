@@ -6,6 +6,7 @@ The Charting Ahead Games website: a home page, the legal pages, and AdMob's `app
 |---|---|
 | `index.html` | Home page: the studio poster, a trail with one stop per game, About and Say hello |
 | `emberstead/` | Emberstead's own page |
+| `leviathan-keeper/` | Leviathan Keeper's own page (in development) |
 | `privacy.html` | Privacy policy for the game and this website. Play Console needs this URL: `https://chartingaheadgames.com/privacy.html` |
 | `terms.html` | Emberstead terms of service. Play Console asks traders for this URL on each app: `https://chartingaheadgames.com/terms.html` |
 | `cookies.html` | Cookie policy: the website uses none. Update it first if that ever changes. |

@@ -238,3 +238,22 @@ footer p { margin: 0; }
 .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-phone.svg); }
 .page-emberstead .poster { --ar-phone: 824 / 1040; --ar-wide: 1600 / 800; --fx-p: 23.03%; --fy-p: 57.58%; --fw-p: 36.47%; --fx-w: 27.32%; --fy-w: 52.88%; --fw-w: 19.37%; }
 @media (min-width: 900px) { .page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-wide.svg); } .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-wide.svg); } }
+
+/* Leviathan Keeper */
+.game-leviathan-keeper { --g-band: #1b1638; --g-ink: #eef4f4; --g-accent: #6fe3d6; --g-shade: #2f7d86; --g-light: #d7e2ea; --g-light-ink: #1b1638; --g-edge: url(assets/games/leviathan-keeper/edge-band.svg); --g-edge-light: url(assets/games/leviathan-keeper/edge-light.svg); }
+.game-leviathan-keeper .marker { background-image: url(assets/games/leviathan-keeper/marker.svg); }
+.page-leviathan-keeper { --spark-1: #66e6d8; --spark-2: #d8fffa; --spark-3: #35b9ae; }
+.page-leviathan-keeper .sky-dusk { background-image: url(assets/games/leviathan-keeper/sky-phone.svg); }
+.page-leviathan-keeper .sky-night { background-image: url(assets/games/leviathan-keeper/night-phone.svg); }
+.page-leviathan-keeper .poster { --ar-phone: 824 / 720; --ar-wide: 1600 / 820; --fx-p: 1.94%; --fy-p: 33.97%; --fw-p: 73.06%; --fx-w: 25.94%; --fy-w: 24.22%; --fw-w: 48.13%; }
+@media (min-width: 900px) { .page-leviathan-keeper .sky-dusk { background-image: url(assets/games/leviathan-keeper/sky-wide.svg); } .page-leviathan-keeper .sky-night { background-image: url(assets/games/leviathan-keeper/night-wide.svg); } }
+.page-leviathan-keeper .l-near img { animation: marrow-drift 6s ease-in-out infinite alternate; }
+@keyframes marrow-drift { from { transform: translate3d(0, -.6%, 0); } to { transform: translate3d(0, .6%, 0); } }
+.page-game .poster .glow-spot { position: absolute; z-index: 4; display: block; aspect-ratio: 2.4 / 1; left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
+@media (min-width: 900px) { .page-game .poster .glow-spot { left: var(--fx-w); top: var(--fy-w); width: var(--fw-w); } }
+button.glow-spot { --spark-reach: 95; margin: 0; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.glow-spot::before { content: ''; position: absolute; inset: 18% 12%; border-radius: 50%; background: radial-gradient(closest-side, rgba(102, 230, 216, .42), rgba(102, 230, 216, .12) 60%, transparent); mix-blend-mode: screen; opacity: .35; animation: breathe 3.2s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes breathe { to { opacity: .8; } }
+.glow-spot.flare::before { animation: heal .9s cubic-bezier(.2, .8, .3, 1); }
+@keyframes heal { 30% { opacity: 1; transform: scale(1.35); } }
+.glow-spot.glow::before { opacity: 1; }
