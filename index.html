@@ -5,51 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Charting Ahead Games</title>
   <meta name="description" content="Charting new ground in indie games, one dream game at a time.">
+  <meta name="theme-color" content="#101f33">
   <meta property="og:title" content="Charting Ahead Games">
   <meta property="og:description" content="Charting new ground in indie games, one dream game at a time.">
-  <meta property="og:image" content="https://chartingaheadgames.com/assets/header.jpg">
-  <meta name="theme-color" content="#0e1a30">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <meta property="og:image" content="https://chartingaheadgames.com/assets/share.jpg">
   <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
 </head>
-<body>
+<body class="home" style="--h-phone: 150.49vw; --h-wide: 50vw">
   <a class="skip" href="#main">Skip to main content</a>
+  <div class="sky" aria-hidden="true"><span class="sky-dusk"></span><span class="sky-night"></span></div>
   <header class="hero">
-    <picture>
-      <source media="(min-width: 900px)" srcset="assets/header-wide.jpg" width="4096" height="1024">
-      <img src="assets/header.jpg" width="4096" height="2304" alt="Charting Ahead Games: a dotted trail leaves a campfire and becomes an ember route rising across a starry night sky toward a guiding star.">
-    </picture>
+    <div class="poster" data-poster style="--ar-phone: 824 / 1240; --ar-wide: 1600 / 800; --fx-p: 18.95%; --fy-p: 84.72%; --fw-p: 16.46%; --fx-w: 19.01%; --fy-w: 78.57%; --fw-w: 8.48%">
+      <picture class="layer l-title" data-speed="0.3" style="--speed:0.3"><source media="(min-width: 900px)" srcset="assets/hero/title-wide.svg" width="1600" height="800"><img src="assets/hero/title-phone.svg" width="824" height="1240" alt="Charting Ahead Games: a dotted trail leaves a campfire and becomes an ember route rising across a starry night sky toward a guiding star."></picture>
+      <picture class="layer l-far" data-speed="0.2" style="--speed:0.2"><source media="(min-width: 900px)" srcset="assets/hero/far-wide.svg" width="1600" height="800"><img src="assets/hero/far-phone.svg" width="824" height="1240" alt=""></picture>
+      <picture class="layer l-mid" data-speed="0.13" style="--speed:0.13"><source media="(min-width: 900px)" srcset="assets/hero/mid-wide.svg" width="1600" height="800"><img src="assets/hero/mid-phone.svg" width="824" height="1240" alt=""></picture>
+      <picture class="layer l-near" data-speed="0.07" style="--speed:0.07"><source media="(min-width: 900px)" srcset="assets/hero/near-wide.svg" width="1600" height="800"><img src="assets/hero/near-phone.svg" width="824" height="1240" alt=""></picture>
+      <picture class="layer l-fore" data-speed="0" style="--speed:0"><source media="(min-width: 900px)" srcset="assets/hero/fore-wide.svg" width="1600" height="800"><img src="assets/hero/fore-phone.svg" width="824" height="1240" alt=""></picture>
+      <span class="fire" data-fire="Stoke the campfire"></span>
+    </div>
   </header>
   <main id="main" tabindex="-1">
     <h1 class="sr-only">Charting Ahead Games</h1>
     <p class="lead">Charting new ground in indie games, one dream game at a time.</p>
 
-    <section class="card">
-      <h2>Emberstead</h2>
-      <p class="tag">Our first game · Android</p>
-      <p>The valley is frozen and the furnace is nearly out. Lead the last few survivors: chop pines, fish the frozen lake, build up a snowbound camp and hire workers. Keep the fire alive, because a bigger camp needs a bigger fire.</p>
-      <ul>
-        <li>One-thumb controls, built for phones</li>
-        <li>A living low-poly camp with day and night, weather and blizzards</li>
-        <li>Workers who lend a hand as your camp grows, and sled expeditions into the storm</li>
-        <li>Free to play, with optional rewarded ads and an optional one-time Remove Ads purchase</li>
-      </ul>
-      <span class="badge">Coming soon to Google Play</span>
+    <section class="band games" id="games" aria-labelledby="games-title" data-trail>
+      <h2 id="games-title">Games</h2>
+      <ol class="stops">
+      <li class="stop game-emberstead" style="--len: 10">
+        <span class="marker" aria-hidden="true"></span>
+        <article class="game-card">
+          <div class="card-art" style="view-transition-name: art-emberstead"><img src="assets/games/emberstead/card.svg" width="1360" height="570" alt="" decoding="async"><span class="postmark" aria-hidden="true"></span></div>
+          <div class="card-text">
+            <h3 style="view-transition-name: name-emberstead"><a href="emberstead/">Emberstead</a></h3>
+            <p class="tag">Our first game · Android</p>
+            <p class="line">A cozy survival camp builder. Keep the fire alive in a frozen valley.</p>
+            <p class="status">Coming soon to Google Play</p>
+            <span class="go" aria-hidden="true">See the game</span>
+          </div>
+        </article>
+      </li>
+      <li class="stop stop-next" aria-hidden="true"><span class="marker"></span><span class="next-sign"></span></li>
+      </ol>
     </section>
 
-    <section class="card">
+    <section class="card about">
       <h2>About</h2>
       <p>Charting Ahead Games is one person, Ryan Bachman. I make games with AI tools that help create the code, the art and the music, and I hold every one of them to a higher bar than the “AI slop” people are tired of. I design every game, play every build and make every call. Nothing ships until it feels handcrafted and I’ve signed it off myself.</p>
     </section>
 
-    <section class="card">
+    <section class="card hello">
       <h2>Say hello</h2>
       <p>Questions, bug reports or ideas: <a href="mailto:support@chartingaheadgames.com">support@chartingaheadgames.com</a></p>
       <p>Charting Ahead Games is the trading name of Ryan Bachman, based in Arizona, USA.</p>
     </section>
   </main>
   <footer>
+    <span class="camp"><span class="fire foot-fire" data-fire="Stoke the campfire"></span></span>
     <nav aria-label="Site pages">
       <a href="./" aria-current="page">Home</a>
       <a href="privacy.html">Privacy Policy</a>

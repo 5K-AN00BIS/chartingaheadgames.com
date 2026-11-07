@@ -1,61 +1,238 @@
-/* Charting Ahead Games — one stylesheet for the whole site. Colors match the brand art. */
+/* The Trailhead v2: one stylesheet for the whole site. */
+@font-face{font-family:'League Gothic';src:url(fonts/league-gothic-latin-400-normal.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Jost';src:url(fonts/jost-latin-400-normal.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Jost';src:url(fonts/jost-latin-600-normal.woff2) format('woff2');font-weight:600;font-style:normal;font-display:swap}
+
 :root {
-  --night: #0e1a30;
-  --deep: #172c50;
-  --sea: #22406f;
-  --parchment: #f4e9cf;
-  --gold: #ffc94a;
-  --ember: #f0641e;
-  --text: #e8e1cf;
-  --muted: #a7b2c4;
-  --card: rgba(244, 233, 207, 0.06);
-  --line: rgba(244, 233, 207, 0.14);
+  --night: #101f33; --teal: #1a4f53; --pine: #12383a; --ember: #d9542b; --sun: #f3b53f; --cream: #f6ead0; --rust: #96311a; --dusk: #1b3a52;
+  --col: 1040px; --pad: max(20px, calc(50% - var(--col) / 2)); --edge-h: 130px; --tree-h: 110px; --band-h: 96px; --gut: 46px;
+  --out: cubic-bezier(.23, 1, .32, 1);
 }
 * { box-sizing: border-box; }
-html { background: var(--night); }
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: linear-gradient(180deg, var(--night) 0%, var(--deep) 60%, var(--night) 100%);
-  color: var(--text);
-  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-a { color: var(--gold); }
-a:hover { color: var(--parchment); }
+html { background: var(--night); -webkit-text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; background: transparent; color: var(--cream); font: 400 18.5px/1.6 'Jost', 'Trebuchet MS', system-ui, sans-serif; overflow-x: clip; --hero-h: var(--h-phone, 150vw); }
+a { color: inherit; overflow-wrap: anywhere; text-decoration-thickness: 2px; text-underline-offset: .16em; transition: color .16s ease-out, text-decoration-color .16s ease-out; }
+::selection { background: var(--sun); color: var(--night); }
+img { max-width: 100%; }
 
-/* Keyboard and screen reader help: a visible focus ring, a skip link that appears on the first Tab, and text only screen readers announce. */
-a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+/* Keyboard and screen reader help */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; border-radius: 2px; }
+.policy a:focus-visible, .shots a:focus-visible, .shots [tabindex]:focus-visible { outline-color: var(--rust); }
 main:focus { outline: none; }
-.skip { position: absolute; left: 16px; top: -80px; z-index: 10; padding: 10px 16px; border-radius: 10px; background: var(--gold); color: var(--night); font-weight: 700; }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 30; padding: 10px 16px; background: var(--sun); color: var(--night); font-weight: 600; }
 .skip:focus, .skip:hover { top: 12px; color: var(--night); }
-.skip:focus-visible { outline-color: var(--parchment); }
+.skip:focus-visible { outline-color: var(--cream); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 
-/* Full width at every size: phones get the 16:9 art, screens 900px and wider a 4:1 banner (assets/header-wide.jpg) so the games show without scrolling. */
-.hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-@media (min-width: 900px) { .hero img { aspect-ratio: 4 / 1; } }
-.hero.slim { padding: 28px 16px 8px; text-align: center; }
-.hero.slim a { display: inline-flex; align-items: center; gap: 12px; color: var(--parchment); text-decoration: none; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; font-size: 15px; }
-.hero.slim img { width: 44px; height: 44px; border-radius: 12px; aspect-ratio: auto; }
+/* The sky stays put behind the poster: sunset at the top of the page, night as you scroll. */
+.sky { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--night); }
+.sky span { position: absolute; inset: 0; background: center top/100% auto no-repeat; }
+.sky-night { opacity: 0; }
 
-main { max-width: 760px; margin: 0 auto; padding: 8px 16px 48px; }
-.lead { font-size: clamp(19px, 2.6vw, 23px); line-height: 1.5; color: var(--parchment); text-align: center; margin: 36px auto 40px; max-width: 720px; text-wrap: balance; }
+/* The poster, in layers. Farther layers lag behind as you scroll, so the ridges slide past each other. */
+.poster { position: relative; overflow: hidden; aspect-ratio: var(--ar-phone); }
+.poster .layer, .poster .layer img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.poster::after { content: ''; position: absolute; inset: 0; z-index: 3; background: url(assets/grain-strong.png) 0 0/512px 512px; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .poster .layer { will-change: transform; }
+  @supports (animation-timeline: scroll()) {
+    .poster .layer { animation: drift linear both; animation-timeline: scroll(root); animation-range: 0 var(--hero-h); }
+    .sky-night { animation: nightfall linear both; animation-timeline: scroll(root); animation-range: 0 calc(var(--hero-h) * .9); }
+  }
+}
+@keyframes drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, calc(var(--speed) * var(--hero-h)), 0); } }
+@keyframes nightfall { from { opacity: 0; } to { opacity: 1; } }
 
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; margin: 0 0 24px; }
-.card h2 { margin: 0; color: var(--parchment); font-size: 28px; }
-.tag { margin: 4px 0 16px; color: var(--gold); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; }
-.card ul { margin: 12px 0 0; padding-left: 20px; }
-.card li { margin: 4px 0; }
-.badge { display: inline-block; margin-top: 18px; padding: 8px 14px; border-radius: 999px; background: linear-gradient(90deg, var(--gold), var(--ember)); color: var(--night); font-weight: 700; font-size: 14px; }
+/* Fires: two cut-paper frames that flicker, and after the script runs, a button that throws sparks */
+.fire { position: absolute; z-index: 4; display: block; aspect-ratio: 6 / 5; }
+.fire::before, .fire::after { content: ''; position: absolute; inset: 0; background: url(assets/flame-a.svg) center/contain no-repeat; pointer-events: none; }
+.fire::after { background-image: url(assets/flame-b.svg); opacity: 0; animation: flame-b .9s steps(1) infinite; }
+.fire::before { animation: flame-a .9s steps(1) infinite; }
+@keyframes flame-a { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes flame-b { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
+button.fire { margin: 0; padding: 0; border: 0; background: none; cursor: pointer; overflow: visible; -webkit-tap-highlight-color: transparent; touch-action: manipulation; border-radius: 50%; }
+button.fire:focus-visible { outline-offset: 2px; border-radius: 50%; }
+.fire-btn.flare { animation: flare .5s cubic-bezier(.2, .9, .3, 1.3); transform-origin: 50% 85%; }
+@keyframes flare { 30% { transform: scale(1.22); } }
+.fire-btn.glow { filter: drop-shadow(0 0 16px rgba(255, 201, 74, .95)); }
+.spark { position: absolute; left: 50%; top: 42%; width: 17px; height: 17px; pointer-events: none; background: var(--sun); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.spark.s1 { background: var(--cream); } .spark.s2 { background: var(--ember); }
+.home .poster .fire { left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
 
-.policy h1 { color: var(--parchment); font-size: clamp(26px, 4vw, 34px); line-height: 1.25; margin: 24px 0 4px; }
-.policy h2 { color: var(--gold); font-size: 19px; margin: 32px 0 6px; }
-.policy .updated { color: var(--muted); margin: 0 0 24px; }
-.policy li { margin: 6px 0; }
+main { position: relative; background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); }
+main.game { background: none; }
+.lead { margin: 0; padding: 26px var(--pad) calc(var(--edge-h) + 34px); font: 400 clamp(46px, 7.6vw, 92px)/1.0 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .005em; color: var(--cream); text-wrap: balance; }
 
-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; text-align: center; padding: 20px 16px 32px; }
-footer a { color: var(--muted); }
-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; margin-bottom: 8px; }
-footer nav a { display: inline-block; padding: 6px 2px; }
-footer a[aria-current="page"] { color: var(--parchment); font-weight: 700; text-decoration: none; }
+/* Bands of land, each with a ridge for a top edge */
+.band, section.card { position: relative; display: flow-root; padding: 18px var(--pad) calc(var(--edge-h) - 12px); }
+.band::before, .band::after, section.card::before, section.card::after { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--edge-h); background: center bottom/cover no-repeat; pointer-events: none; }
+.band::after, section.card::after { background: url(assets/grain-light.png) 0 0/512px 512px; -webkit-mask: var(--edge) center bottom/cover no-repeat; mask: var(--edge) center bottom/cover no-repeat; }
+.band::before, section.card::before { background-image: var(--edge); }
+.games { --edge: url(assets/edge-teal.svg); background: url(assets/grain-light.png) 0 0/512px 512px, var(--teal); color: var(--cream); }
+.about { --edge: url(assets/edge-cream.svg); background: url(assets/grain-dark.png) 0 0/512px 512px, var(--cream); color: var(--night); }
+.about::after { background-image: url(assets/grain-dark.png); }
+.hello { --edge: url(assets/edge-rust.svg); background: url(assets/grain-light.png) 0 0/512px 512px, var(--rust); color: var(--cream); padding-bottom: calc(var(--tree-h) - 10px) !important; }
+.games h2, .card h2, .game-body h1, .shots h2 { margin: 0 0 2px; font: 400 clamp(76px, 15vw, 132px)/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; text-shadow: 3px 4px 0 var(--shade, var(--ember)); }
+.about h2 { --shade: var(--sun); color: var(--night); }
+.hello h2 { --shade: var(--night); }
+.card p { margin: 0 0 14px; }
+.hello a { color: var(--cream); }
+.tag { margin: 8px 0 18px; font: 600 15px/1.3 'Jost', 'Trebuchet MS', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #fbd27c; }
+
+/* The trail of games */
+.games h2 { margin-bottom: 26px; }
+.stops { position: relative; margin: 0; padding: 0 0 0 var(--gut); list-style: none; }
+.games:not(.trail-live) .stops::before { content: ''; position: absolute; left: calc(var(--gut) / 2 - 3px); top: -24px; bottom: 0; width: 6px; border-radius: 3px; background: repeating-linear-gradient(to bottom, var(--cream) 0 10px, transparent 10px 24px); }
+.trail-svg { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; overflow: visible; z-index: 1; }
+.trail-ink { fill: none; stroke: var(--cream); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 9 13; }
+.trail-mask { fill: none; stroke: #fff; stroke-width: 60; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.hiker { position: absolute; left: 0; top: 0; z-index: 3; width: 32px; height: 48px; background: url(assets/hiker.svg) 0 0/64px 48px no-repeat; offset-anchor: 50% 94%; offset-rotate: 0deg; pointer-events: none; }
+.hiker[data-step="1"] { background-position: -32px 0; }
+.hiker[data-face="left"] { transform: scaleX(-1); }
+.stop { position: relative; margin: 0 0 54px; container-type: inline-size; }
+.marker { position: absolute; z-index: 2; left: calc(var(--gut) * -1 + var(--gut) / 2 - 17px); top: 22px; width: 34px; height: 50px; background: url(assets/marker.svg) center/contain no-repeat; }
+.stop-next { margin-bottom: 0; min-height: 110px; }
+.next-sign { display: block; width: 130px; height: 112px; background: url(assets/next.svg) left bottom/contain no-repeat; opacity: .9; }
+
+.game-card { position: relative; display: grid; padding: 10px; background: var(--cream); border-radius: 3px; color: var(--g-ink); box-shadow: 0 22px 40px -18px rgba(3, 9, 18, .75); transition: transform .24s var(--out), box-shadow .24s var(--out); }
+.card-art { position: relative; overflow: hidden; aspect-ratio: 1360 / 570; background: var(--g-band); }
+.card-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.card-text { padding: 18px 20px 22px; background: url(assets/grain-light.png) 0 0/512px 512px, var(--g-band); }
+.card-text h3 { margin: 0; font: 400 clamp(40px, calc((100cqi - var(--gut) - 64px) / (var(--len, 10) * .46)), 92px)/.92 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; text-shadow: 3px 4px 0 var(--g-shade); }
+.card-text h3 a { color: var(--g-ink); text-decoration: none; }
+.card-text h3 a::after { content: ''; position: absolute; inset: 0; z-index: 6; border-radius: 3px; }
+.card-text h3 a:focus-visible { outline: none; }
+.card-text h3 a:focus-visible::after { outline: 3px solid var(--sun); outline-offset: 4px; }
+.card-text .tag { color: var(--g-accent); margin: 10px 0 10px; }
+.card-text .line { margin: 0 0 16px; font-size: 19px; line-height: 1.5; }
+.card-text .status { display: inline-block; margin: 0 14px 12px 0; padding: 5px 12px 4px; border: 2px solid var(--g-accent); color: var(--g-accent); font: 400 22px/1.15 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.go { display: inline-block; padding: 7px 38px 6px 14px; background: var(--sun); color: var(--night); font: 400 24px/1.1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%); transition: transform .24s var(--out); }
+.game-card:active { transform: scale(.975); box-shadow: 0 10px 20px -12px rgba(3, 9, 18, .8); transition-duration: .1s; }
+@media (hover: hover) and (pointer: fine) {
+  .game-card:hover { transform: translateY(-5px) rotate(-.35deg); box-shadow: 0 30px 50px -18px rgba(3, 9, 18, .8); }
+  .game-card:hover .go { transform: translateX(5px); }
+  .game-card:active { transform: scale(.975); }
+}
+.postmark { position: absolute; z-index: 2; right: -3%; top: 5%; width: 44%; aspect-ratio: 260 / 112; background: url(assets/postmark.svg) center/contain no-repeat; transform: rotate(-9deg); pointer-events: none; }
+.postmark.pre { opacity: 0; }
+.postmark.inked { animation: thunk .36s cubic-bezier(.2, .9, .25, 1.15) both; }
+@keyframes thunk { from { opacity: 0; transform: rotate(-15deg) scale(1.45); } 55% { opacity: 1; } to { opacity: 1; transform: rotate(-9deg) scale(1); } }
+
+/* A game's own page: its poster, then its own bands, then the studio footer */
+.page-game .hero.game-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 8; padding: 12px var(--pad) 0; background: none; }
+.page-game .hero.game-bar a { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; color: var(--cream); text-decoration: none; font: 400 28px/1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+.page-game .hero.game-bar img { width: 44px; height: auto; }
+.page-game .poster .fire { left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
+.game-body { --edge: var(--g-edge); position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--edge-h) - 10px); background: url(assets/grain-light.png) 0 0/512px 512px, var(--g-band); color: var(--g-ink); }
+.game-body::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: calc(var(--edge-h) * .62); background: var(--g-edge) center bottom/cover no-repeat; pointer-events: none; }
+.game-body h1 { --shade: var(--g-shade); color: var(--g-ink); }
+.game-body .tag { color: var(--g-accent); }
+.game-body p { margin: 0 0 14px; max-width: 62ch; }
+.game-body ul { list-style: none; margin: 16px 0 0; padding: 0; }
+.game-body li { position: relative; margin: 9px 0; padding-left: 30px; }
+.game-body li::before { content: ''; position: absolute; left: 0; top: .34em; width: 17px; height: 17px; background: url(assets/bullet.svg) center/contain no-repeat; }
+.badge { display: inline-block; margin-top: 24px; padding: 8px 46px 7px 18px; background: var(--sun); color: var(--night); font: 400 27px/1.15 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 50%, calc(100% - 26px) 100%, 0 100%); }
+.plate { display: block; width: 100%; height: auto; margin: 26px 0 8px; padding: 12px; background: var(--cream); transform: rotate(-1.4deg);
+  -webkit-mask: radial-gradient(circle 5.2px at center, transparent 96%, #000) -9px -9px/18px 18px, linear-gradient(#000 0 0) center/calc(100% - 18px) calc(100% - 18px) no-repeat; -webkit-mask-composite: source-over;
+  mask: radial-gradient(circle 5.2px at center, transparent 96%, #000) -9px -9px/18px 18px, linear-gradient(#000 0 0) center/calc(100% - 18px) calc(100% - 18px) no-repeat; mask-composite: add; }
+.shots { position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--tree-h) + 28px); background: url(assets/grain-dark.png) 0 0/512px 512px, var(--g-light); color: var(--g-light-ink); }
+.shots::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--edge-h); background: var(--g-edge-light) center bottom/cover no-repeat; pointer-events: none; }
+.shots h2 { --shade: var(--g-shade); color: var(--g-light-ink); font-size: clamp(60px, 11vw, 104px); }
+.shot-strip { display: flex; gap: 16px; margin: 18px calc(var(--pad) * -1) 0; padding: 6px var(--pad) 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); list-style: none; scrollbar-width: thin; }
+.shot-strip li { flex: 0 0 62%; scroll-snap-align: start; }
+.shot-strip figure { margin: 0; }
+.shot-strip img { display: block; width: 100%; height: auto; border: 7px solid #fff; border-radius: 16px; box-shadow: 0 16px 28px -16px rgba(16, 12, 40, .65); }
+.shot-strip figcaption { margin-top: 10px; font: 400 25px/1.05 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; }
+.back { margin: 30px 0 0; }
+.game-body .back { padding-top: 18px; }
+.game-body .back a { background: var(--sun); color: var(--night); }
+.game-body:last-child { padding-bottom: calc(var(--tree-h) + 30px); }
+.back a { display: inline-flex; align-items: center; min-height: 48px; padding: 6px 18px 5px 34px; background: var(--g-band); color: var(--g-ink); text-decoration: none; font: 400 26px/1.1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .04em; text-transform: uppercase; clip-path: polygon(22px 0, 100% 0, 100% 100%, 22px 100%, 0 50%); transition: transform .24s var(--out); }
+.back a:active { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) { .back a:hover { transform: translateX(-4px); } }
+
+/* The policy pages: the notice board at the trailhead */
+.hero.slim { padding: 22px var(--pad) calc(var(--band-h) + 22px); background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); }
+.hero.slim a { display: inline-flex; align-items: center; gap: 14px; min-height: 48px; text-decoration: none; font: 400 34px/1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; color: var(--cream); }
+.hero.slim img { width: 54px; height: auto; }
+.policy { background: url(assets/grain-dark.png) 0 0/512px 512px, var(--cream); color: var(--night); padding: 6px var(--pad) calc(var(--tree-h) + 40px); }
+.policy::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--band-h); background: url(assets/band.svg) center bottom/cover no-repeat; pointer-events: none; }
+.policy h1 { margin: 0; font: 400 clamp(76px, 15vw, 132px)/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--night); text-shadow: 3px 4px 0 var(--sun); }
+.policy .updated { margin: 10px 0 22px; font: 600 15px/1.3 'Jost', 'Trebuchet MS', sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #8a2e13; }
+.policy h2 { position: relative; margin: 36px 0 8px; padding-left: 30px; font: 400 34px/1.08 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .02em; text-transform: uppercase; color: var(--night); }
+.policy h2::before { content: ''; position: absolute; left: 0; top: .17em; width: 20px; height: 20px; background: url(assets/bullet-dark.svg) center/contain no-repeat; }
+.policy p { margin: 0 0 12px; }
+.policy ul { margin: 6px 0 14px; padding-left: 20px; }
+.policy li { margin: 7px 0; }
+.policy li::marker { color: var(--rust); }
+.policy strong { font-weight: 600; }
+.policy a { color: #8a2e13; }
+
+/* The last fire */
+footer { position: relative; padding: 0 var(--pad) 26px; background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); color: #d9d2c0; font-size: 15px; text-align: center; }
+footer::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--tree-h); background: url(assets/edge-night.svg) center bottom/cover no-repeat; pointer-events: none; }
+footer .camp { position: relative; display: block; height: 210px; margin: 0 calc(50% - 50vw) 8px; overflow-x: clip; overflow-y: visible; background: url(assets/foot.svg) center bottom/cover no-repeat; }
+footer .camp::before { content: ''; position: absolute; left: 50%; bottom: 14px; width: 150px; height: 125px; margin-left: -75px; background: url(assets/logs.svg) center/contain no-repeat; }
+footer .camp::after { content: ''; position: absolute; left: 0; right: 0; margin: 0 auto; bottom: -30px; width: min(620px, 100%); height: 170px; border-radius: 50%; background: radial-gradient(closest-side, rgba(217, 84, 43, .34), rgba(217, 84, 43, .14) 60%, transparent); pointer-events: none; }
+footer .foot-fire { left: 50%; bottom: 14px; width: 150px; margin-left: -75px; }
+footer nav { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; margin: 0 auto 10px; max-width: 460px; }
+footer nav a { display: flex; align-items: center; justify-content: center; min-height: 48px; font: 600 15.5px/1.2 'Jost', 'Trebuchet MS', sans-serif; letter-spacing: .05em; color: var(--cream); text-decoration: none; }
+footer nav a[aria-current="page"] { color: var(--sun); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .3em; }
 footer p { margin: 0; }
+@media (hover: hover) and (pointer: fine) { a:hover { text-decoration-color: var(--sun); } footer nav a:hover { color: var(--sun); } .policy a:hover { color: var(--night); } }
+
+/* One page leads into the next: a game's picture grows into its page. */
+@view-transition { navigation: auto; }
+::view-transition-group(*) { animation-duration: .55s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .3s; }
+
+@media (min-width: 900px) {
+  :root { --edge-h: max(180px, 11.9vw); --tree-h: max(150px, 11.9vw); --band-h: max(130px, 9.4vw); --gut: 130px; }
+  body { font-size: 19px; --hero-h: var(--h-wide, 50vw); }
+  .poster { aspect-ratio: var(--ar-wide); }
+  .home .poster .fire, .page-game .poster .fire { left: var(--fx-w); top: var(--fy-w); width: var(--fw-w); }
+  .lead { padding-top: 16px; padding-bottom: calc(var(--edge-h) + 46px); }
+  .band, section.card { padding-bottom: calc(var(--edge-h) - 10px); }
+  .marker { width: 44px; height: 64px; left: calc(var(--gut) * -1 + var(--gut) / 2 - 22px); top: 40px; }
+  .hiker { width: 40px; height: 60px; background-size: 80px 60px; }
+  .hiker[data-step="1"] { background-position: -40px 0; }
+  .game-card { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+  .card-art { aspect-ratio: auto; min-height: 330px; }
+  .card-text { padding: 26px 28px 28px; }
+  .card-text h3 { font-size: clamp(40px, calc(((100cqi - 20px) / 2.3 - 60px) / (var(--len, 10) * .46)), 92px); }
+  .stop { margin-bottom: 70px; }
+  section.about { display: grid; grid-template-columns: 44% 1fr; column-gap: 6%; }
+  .about > h2 { grid-column: 1; } .about > p { grid-column: 2; font-size: 21px; line-height: 1.55; align-self: end; }
+  section.hello { display: grid; grid-template-columns: 44% 1fr; column-gap: 6%; padding-bottom: calc(var(--tree-h) - 20px) !important; }
+  .hello > h2 { grid-column: 1; grid-row: 1 / span 3; } .hello > p { grid-column: 2; }
+  .game-body > h1, .game-body > .tag, .game-body > .plate { float: left; clear: left; width: 44%; }
+  .game-body > p:not(.tag), .game-body > ul, .game-body > .badge { margin-left: 50%; }
+  .game-body > .badge { display: table; }
+  .shot-strip { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; margin: 22px 0 0; padding: 6px 0 10px; }
+  .page-game .hero.game-bar a { font-size: 32px; }
+  .policy { display: grid; grid-template-columns: 300px minmax(0, 1fr); column-gap: 44px; padding-bottom: calc(var(--tree-h) + 44px); }
+  .policy > * { grid-column: 2; max-width: 66ch; }
+  .policy > h1, .policy > .updated { grid-column: 1 / -1; max-width: none; }
+  .policy > h2 { grid-column: 1; margin: 30px 0 0; }
+  .policy > h2 + p, .policy > h2 + ul { margin-top: 34px; }
+  footer .camp { height: max(290px, 21.25vw); }
+  footer .camp::before { width: 210px; height: 175px; margin-left: -105px; bottom: 18px; }
+  footer .foot-fire { bottom: 18px; width: 210px; margin-left: -105px; }
+  footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 28px; max-width: none; }
+}
+@media (min-width: 1500px) { :root { --col: 1240px; } body { font-size: 20.5px; } .card h2, .policy h1, .games h2, .game-body h1 { font-size: 150px; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .fire::after { opacity: 0; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+.home .sky-dusk { background-image: url(assets/sky-phone.svg); } .home .sky-night { background-image: url(assets/night-phone.svg); }
+@media (min-width: 900px) { .home .sky-dusk { background-image: url(assets/sky-wide.svg); } .home .sky-night { background-image: url(assets/night-wide.svg); } }
+
+/* Emberstead */
+.game-emberstead { --g-band: #221b45; --g-ink: #eef2fb; --g-accent: #ffc94a; --g-shade: #f0641e; --g-light: #eef2fb; --g-light-ink: #221b45; --g-edge: url(assets/games/emberstead/edge-band.svg); --g-edge-light: url(assets/games/emberstead/edge-light.svg); }
+.game-emberstead .marker { background-image: url(assets/games/emberstead/marker.svg); }
+.page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-phone.svg); }
+.page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-phone.svg); }
+.page-emberstead .poster { --ar-phone: 824 / 1040; --ar-wide: 1600 / 800; --fx-p: 23.03%; --fy-p: 57.58%; --fw-p: 36.47%; --fx-w: 27.32%; --fy-w: 52.88%; --fw-w: 19.37%; }
+@media (min-width: 900px) { .page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-wide.svg); } .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-wide.svg); } }
