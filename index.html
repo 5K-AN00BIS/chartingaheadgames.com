@@ -14,13 +14,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a class="skip" href="#main">Skip to main content</a>
   <header class="hero">
     <picture>
       <source media="(min-width: 900px)" srcset="assets/header-wide.jpg" width="4096" height="1024">
       <img src="assets/header.jpg" width="4096" height="2304" alt="Charting Ahead Games: a dotted trail leaves a campfire and becomes an ember route rising across a starry night sky toward a guiding star.">
     </picture>
   </header>
-  <main>
+  <main id="main" tabindex="-1">
+    <h1 class="sr-only">Charting Ahead Games</h1>
     <p class="lead">Charting new ground in indie games, one dream game at a time.</p>
 
     <section class="card">
@@ -30,8 +32,8 @@
       <ul>
         <li>One-thumb controls, built for phones</li>
         <li>A living low-poly camp with day and night, weather and blizzards</li>
-        <li>Workers who automate your camp as it grows, and sled expeditions into the storm</li>
-        <li>Free to play, with only optional rewarded boosts</li>
+        <li>Workers who lend a hand as your camp grows, and sled expeditions into the storm</li>
+        <li>Free to play, with optional rewarded ads and an optional one-time Remove Ads purchase</li>
       </ul>
       <span class="badge">Coming soon to Google Play</span>
     </section>
@@ -44,8 +46,18 @@
     <section class="card">
       <h2>Say hello</h2>
       <p>Questions, bug reports or ideas: <a href="mailto:support@chartingaheadgames.com">support@chartingaheadgames.com</a></p>
+      <p>Charting Ahead Games is the trading name of Ryan Bachman, based in Arizona, USA.</p>
     </section>
   </main>
-  <footer>© 2026 Charting Ahead Games · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a></footer>
+  <footer>
+    <nav aria-label="Site pages">
+      <a href="./" aria-current="page">Home</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="cookies.html">Cookie Policy</a>
+      <a href="refunds.html">Refund Policy</a>
+    </nav>
+    <p>© 2026 Ryan Bachman, trading as Charting Ahead Games. Google Play is a trademark of Google LLC.</p>
+  </footer>
 </body>
 </html>
