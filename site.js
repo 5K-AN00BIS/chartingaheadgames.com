@@ -21,12 +21,12 @@
   /* 2. The trail: a path through every game's marker, drawn on as you scroll, with a hiker walking it. */
   const games = doc.querySelector('[data-trail]');
   const svgNS = 'http://www.w3.org/2000/svg';
-  let ink, reveal, hikerEl, table = [], total = 0, restLen = 0, lastLen = -1;
+  let ink, reveal, hole, hikerEl, table = [], total = 0, restLen = 0, lastLen = -1;
   if (games) {
     const svg = doc.createElementNS(svgNS, 'svg'); svg.setAttribute('class', 'trail-svg'); svg.setAttribute('aria-hidden', 'true');
-    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask" pathLength="1"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
+    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask" pathLength="1"/><rect class="trail-hole" fill="#000"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
     games.prepend(svg);
-    ink = svg.querySelector('.trail-ink'); reveal = svg.querySelector('.trail-mask');
+    ink = svg.querySelector('.trail-ink'); reveal = svg.querySelector('.trail-mask'); hole = svg.querySelector('.trail-hole');
     hikerEl = doc.createElement('span'); hikerEl.className = 'hiker'; hikerEl.setAttribute('aria-hidden', 'true'); games.append(hikerEl);
     games.classList.add('trail-live');
   }
@@ -54,6 +54,8 @@
   function trailAt(len, drawTo) {
     if (!games || !total) return;
     hikerEl.style.offsetDistance = (len / total * 100).toFixed(3) + '%';
+    const ft = ink.getPointAtLength(len), hw = hikerEl.offsetWidth, hh = hikerEl.offsetHeight; // keep the line out from between his legs
+    hole.setAttribute('x', (ft.x - hw * .36).toFixed(1)); hole.setAttribute('y', (ft.y - hh * .5).toFixed(1)); hole.setAttribute('width', (hw * .72).toFixed(1)); hole.setAttribute('height', (hh * .56).toFixed(1));
     reveal.style.strokeDashoffset = (1 - drawTo / total).toFixed(4);
     if (lastLen >= 0) { const step = Math.floor(len / 13) % 2; hikerEl.dataset.step = step; const a = ink.getPointAtLength(Math.max(0, len - 3)).x, b = ink.getPointAtLength(Math.min(total, len + 3)).x; if (Math.abs(b - a) > .4) hikerEl.dataset.face = b < a ? 'left' : 'right'; }
     lastLen = len;
@@ -107,7 +109,7 @@
     b.classList.remove('flare', 'glow'); void b.offsetWidth;
     if (still()) { b.classList.add('glow'); setTimeout(() => b.classList.remove('glow'), 900); return; }
     b.classList.add('flare');
-    const w = b.offsetWidth, n = 16 + Math.round(Math.random() * 6);
+    const w = parseFloat(getComputedStyle(b).getPropertyValue('--spark-reach')) || b.offsetWidth, n = 16 + Math.round(Math.random() * 6); // a page can set how far its sparks fly
     for (let i = 0; i < n; i++) {
       const s = doc.createElement('i'); s.className = 'spark s' + (i % 3); b.append(s);
       const a = (-90 + (Math.random() - .5) * 120) * Math.PI / 180, dist = w * (.55 + Math.random() * 1.15), dx = Math.cos(a) * dist, dy = Math.sin(a) * dist, size = .6 + Math.random() * .8;

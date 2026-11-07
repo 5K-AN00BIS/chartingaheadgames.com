@@ -55,8 +55,8 @@ button.fire:focus-visible { outline-offset: 2px; border-radius: 50%; }
 .fire-btn.flare { animation: flare .5s cubic-bezier(.2, .9, .3, 1.3); transform-origin: 50% 85%; }
 @keyframes flare { 30% { transform: scale(1.22); } }
 .fire-btn.glow { filter: drop-shadow(0 0 16px rgba(255, 201, 74, .95)); }
-.spark { position: absolute; left: 50%; top: 42%; width: 17px; height: 17px; pointer-events: none; background: var(--sun); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
-.spark.s1 { background: var(--cream); } .spark.s2 { background: var(--ember); }
+.spark { position: absolute; left: 50%; top: 42%; width: 17px; height: 17px; pointer-events: none; background: var(--spark-1, var(--sun)); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.spark.s1 { background: var(--spark-2, var(--cream)); } .spark.s2 { background: var(--spark-3, var(--ember)); }
 .home .poster .fire { left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
 
 main { position: relative; background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); }
@@ -86,7 +86,9 @@ main.game { background: none; }
 .trail-svg { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; overflow: visible; z-index: 1; }
 .trail-ink { fill: none; stroke: var(--cream); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 9 13; }
 .trail-mask { fill: none; stroke: #fff; stroke-width: 60; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
-.hiker { position: absolute; left: 0; top: 0; z-index: 3; width: 32px; height: 48px; background: url(assets/hiker.svg) 0 0/64px 48px no-repeat; offset-anchor: 50% 94%; offset-rotate: 0deg; pointer-events: none; }
+.hiker { position: absolute; left: 0; top: 0; z-index: 3; width: 32px; height: 48px; background: url(assets/hiker.svg) 0 0/64px 48px no-repeat; offset-anchor: 50% 94%; offset-rotate: 0deg; pointer-events: none;
+  /* a thin dark edge, so the trail reads as passing behind him rather than joining onto him */
+  filter: drop-shadow(1.5px 0 0 #0f3134) drop-shadow(-1.5px 0 0 #0f3134) drop-shadow(0 -1.5px 0 #0f3134); }
 .hiker[data-step="1"] { background-position: -32px 0; }
 .hiker[data-face="left"] { transform: scaleX(-1); }
 .stop { position: relative; margin: 0 0 54px; container-type: inline-size; }
