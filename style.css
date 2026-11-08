@@ -7,7 +7,14 @@
   --night: #101f33; --teal: #1a4f53; --pine: #12383a; --ember: #d9542b; --sun: #f3b53f; --cream: #f6ead0; --rust: #96311a; --dusk: #1b3a52;
   --col: 1040px; --pad: max(20px, calc(50% - var(--col) / 2)); --edge-h: 130px; --tree-h: 110px; --band-h: 96px; --gut: 46px;
   --out: cubic-bezier(.23, 1, .32, 1);
+  --cap: 100vh; /* the tallest a poster gets: the window's height */
+  --grain-s: url(assets/grain-strong.png); --grain-l: url(assets/grain-light.png); --grain-d: url(assets/grain-dark.png);
 }
+@supports (height: 100svh) { :root { --cap: 100svh; } }
+/* The paper grain is tuned for phones, where each speck is smaller than a pixel you can see. On a regular monitor every speck is one sharp
+   pixel, so the same grain reads as noise (Ryan, 2026-11-07); those screens get a fainter print of it. */
+@media (max-resolution: 1.99dppx), (-webkit-max-device-pixel-ratio: 1.99) { :root { --grain-s: url(assets/grain-strong-mid.png); --grain-l: url(assets/grain-light-mid.png); --grain-d: url(assets/grain-dark-mid.png); } }
+@media (max-resolution: 1.49dppx), (-webkit-max-device-pixel-ratio: 1.49) { :root { --grain-s: url(assets/grain-strong-lo.png); --grain-l: url(assets/grain-light-lo.png); --grain-d: url(assets/grain-dark-lo.png); } }
 * { box-sizing: border-box; }
 html { background: var(--night); -webkit-text-size-adjust: 100%; }
 body { margin: 0; min-height: 100vh; background: transparent; color: var(--cream); font: 400 18.5px/1.6 'Jost', 'Trebuchet MS', system-ui, sans-serif; overflow-x: hidden; overflow-x: clip; --hero-h: var(--h-phone, 150vw); }
@@ -32,7 +39,7 @@ main:focus { outline: none; }
 /* The poster, in layers. Farther layers lag behind as you scroll, so the ridges slide past each other. */
 .poster { position: relative; overflow: hidden; aspect-ratio: var(--ar-phone); }
 .poster .layer, .poster .layer img { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; display: block; }
-.poster::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 3; background: url(assets/grain-strong.png) 0 0/512px 512px; pointer-events: none; }
+.poster::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 3; background: var(--grain-s) 0 0/512px 512px; pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
   .poster .layer { will-change: transform; }
   @supports (animation-timeline: scroll()) {
@@ -59,19 +66,19 @@ button.fire:focus-visible { outline-offset: 2px; border-radius: 50%; }
 .spark.s1 { background: var(--spark-2, var(--cream)); } .spark.s2 { background: var(--spark-3, var(--ember)); }
 .home .poster .fire { left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
 
-main { position: relative; background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); }
+main { position: relative; background: var(--grain-l) 0 0/512px 512px, var(--night); }
 main.game { background: none; }
 .lead { margin: 0; padding: 26px var(--pad) calc(var(--edge-h) + 34px); font: 400 46px/1.0 'League Gothic', 'Arial Narrow', Impact, sans-serif; font: 400 clamp(46px, 7.6vw, 92px)/1.0 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .005em; color: var(--cream); text-wrap: balance; }
 
 /* Bands of land, each with a ridge for a top edge */
 .band, section.card { position: relative; display: flow-root; padding: 18px var(--pad) calc(var(--edge-h) - 12px); }
 .band::before, .band::after, section.card::before, section.card::after { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--edge-h); background: center bottom/cover no-repeat; pointer-events: none; }
-.band::after, section.card::after { background: url(assets/grain-light.png) 0 0/512px 512px; -webkit-mask: var(--edge) center bottom/cover no-repeat; mask: var(--edge) center bottom/cover no-repeat; }
+.band::after, section.card::after { background: var(--grain-l) 0 0/512px 512px; -webkit-mask: var(--edge) center bottom/cover no-repeat; mask: var(--edge) center bottom/cover no-repeat; }
 .band::before, section.card::before { background-image: var(--edge); }
-.games { --edge: url(assets/edge-teal.svg); background: url(assets/grain-light.png) 0 0/512px 512px, var(--teal); color: var(--cream); }
-.about { --edge: url(assets/edge-cream.svg); background: url(assets/grain-dark.png) 0 0/512px 512px, var(--cream); color: var(--night); }
-.about::after { background-image: url(assets/grain-dark.png); }
-.hello { --edge: url(assets/edge-rust.svg); background: url(assets/grain-light.png) 0 0/512px 512px, var(--rust); color: var(--cream); padding-bottom: calc(var(--tree-h) - 10px) !important; }
+.games { --edge: url(assets/edge-teal.svg); background: var(--grain-l) 0 0/512px 512px, var(--teal); color: var(--cream); }
+.about { --edge: url(assets/edge-cream.svg); background: var(--grain-d) 0 0/512px 512px, var(--cream); color: var(--night); }
+.about::after { background-image: var(--grain-d); }
+.hello { --edge: url(assets/edge-rust.svg); background: var(--grain-l) 0 0/512px 512px, var(--rust); color: var(--cream); padding-bottom: calc(var(--tree-h) - 10px) !important; }
 .games h2, .card h2, .game-body h1, .shots h2 { margin: 0 0 2px; font: 400 76px/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; font: 400 clamp(76px, 15vw, 132px)/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; text-shadow: 3px 4px 0 var(--shade, var(--ember)); }
 .about h2 { --shade: var(--sun); color: var(--night); }
 .hello h2 { --shade: var(--night); }
@@ -99,7 +106,7 @@ main.game { background: none; }
 .game-card { position: relative; display: grid; padding: 10px; background: var(--cream); border-radius: 3px; color: var(--g-ink); box-shadow: 0 22px 40px -18px rgba(3, 9, 18, .75); transition: transform .24s var(--out), box-shadow .24s var(--out); }
 .card-art { position: relative; overflow: hidden; aspect-ratio: 1360 / 570; background: var(--g-band); }
 .card-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.card-text { padding: 18px 20px 22px; background: url(assets/grain-light.png) 0 0/512px 512px, var(--g-band); }
+.card-text { padding: 18px 20px 22px; background: var(--grain-l) 0 0/512px 512px, var(--g-band); }
 .card-text h3 { margin: 0; font: 400 40px/.92 'League Gothic', 'Arial Narrow', Impact, sans-serif; font: 400 clamp(40px, calc((100cqi - var(--gut) - 64px) / (var(--len, 10) * .46)), 92px)/.92 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; text-shadow: 3px 4px 0 var(--g-shade); }
 .card-text h3 a { color: var(--g-ink); text-decoration: none; }
 .card-text h3 a::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 6; border-radius: 3px; }
@@ -125,7 +132,7 @@ main.game { background: none; }
 .page-game .hero.game-bar a { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; color: var(--cream); text-decoration: none; font: 400 28px/1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
 .page-game .hero.game-bar img { width: 44px; height: auto; }
 .page-game .poster .fire { left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
-.game-body { --edge: var(--g-edge); position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--edge-h) - 10px); background: url(assets/grain-light.png) 0 0/512px 512px, var(--g-band); color: var(--g-ink); }
+.game-body { --edge: var(--g-edge); position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--edge-h) - 10px); background: var(--grain-l) 0 0/512px 512px, var(--g-band); color: var(--g-ink); }
 .game-body::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: calc(var(--edge-h) * .62); background: var(--g-edge) center bottom/cover no-repeat; pointer-events: none; }
 .game-body h1 { --shade: var(--g-shade); color: var(--g-ink); }
 .game-body .tag { color: var(--g-accent); }
@@ -137,7 +144,7 @@ main.game { background: none; }
 .plate { display: block; width: 100%; height: auto; margin: 26px 0 8px; padding: 12px; background: var(--cream); transform: rotate(-1.4deg);
   -webkit-mask: radial-gradient(circle 5.2px at center, transparent 96%, #000) -9px -9px/18px 18px, linear-gradient(#000 0 0) center/calc(100% - 18px) calc(100% - 18px) no-repeat; -webkit-mask-composite: source-over;
   mask: radial-gradient(circle 5.2px at center, transparent 96%, #000) -9px -9px/18px 18px, linear-gradient(#000 0 0) center/calc(100% - 18px) calc(100% - 18px) no-repeat; mask-composite: add; }
-.shots { position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--tree-h) + 28px); background: url(assets/grain-dark.png) 0 0/512px 512px, var(--g-light); color: var(--g-light-ink); }
+.shots { position: relative; display: flow-root; padding: 4px var(--pad) calc(var(--tree-h) + 28px); background: var(--grain-d) 0 0/512px 512px, var(--g-light); color: var(--g-light-ink); }
 .shots::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--edge-h); background: var(--g-edge-light) center bottom/cover no-repeat; pointer-events: none; }
 .shots h2 { --shade: var(--g-shade); color: var(--g-light-ink); font-size: 60px; font-size: clamp(60px, 11vw, 104px); }
 .shot-strip { display: flex; gap: 16px; margin: 18px calc(var(--pad) * -1) 0; padding: 6px var(--pad) 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); list-style: none; scrollbar-width: thin; }
@@ -154,10 +161,10 @@ main.game { background: none; }
 @media (hover: hover) and (pointer: fine) { .back a:hover { transform: translateX(-4px); } }
 
 /* The policy pages: the notice board at the trailhead */
-.hero.slim { padding: 22px var(--pad) calc(var(--band-h) + 22px); background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); }
+.hero.slim { padding: 22px var(--pad) calc(var(--band-h) + 22px); background: var(--grain-l) 0 0/512px 512px, var(--night); }
 .hero.slim a { display: inline-flex; align-items: center; gap: 14px; min-height: 48px; text-decoration: none; font: 400 34px/1 'League Gothic', 'Arial Narrow', Impact, sans-serif; letter-spacing: .03em; text-transform: uppercase; color: var(--cream); }
 .hero.slim img { width: 54px; height: auto; }
-.policy { background: url(assets/grain-dark.png) 0 0/512px 512px, var(--cream); color: var(--night); padding: 6px var(--pad) calc(var(--tree-h) + 40px); }
+.policy { background: var(--grain-d) 0 0/512px 512px, var(--cream); color: var(--night); padding: 6px var(--pad) calc(var(--tree-h) + 40px); }
 .policy::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--band-h); background: url(assets/band.svg) center bottom/cover no-repeat; pointer-events: none; }
 .policy h1 { margin: 0; font: 400 76px/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; font: 400 clamp(76px, 15vw, 132px)/.94 'League Gothic', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--night); text-shadow: 3px 4px 0 var(--sun); }
 .policy .updated { margin: 10px 0 22px; font: 600 15px/1.3 'Jost', 'Trebuchet MS', sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #8a2e13; }
@@ -171,7 +178,7 @@ main.game { background: none; }
 .policy a { color: #8a2e13; }
 
 /* The last fire */
-footer { position: relative; padding: 0 var(--pad) 26px; background: url(assets/grain-light.png) 0 0/512px 512px, var(--night); color: #d9d2c0; font-size: 15px; text-align: center; }
+footer { position: relative; padding: 0 var(--pad) 26px; background: var(--grain-l) 0 0/512px 512px, var(--night); color: #d9d2c0; font-size: 15px; text-align: center; }
 footer::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); height: var(--tree-h); background: url(assets/edge-night.svg) center bottom/cover no-repeat; pointer-events: none; }
 footer .camp { position: relative; display: block; height: 210px; margin: 0 calc(50% - 50vw) 8px; overflow-x: clip; overflow-y: visible; background: url(assets/foot.svg) center bottom/cover no-repeat; }
 footer .camp::before { content: ''; position: absolute; left: 50%; bottom: 14px; width: 150px; height: 125px; margin-left: -75px; background: url(assets/logs.svg) center/contain no-repeat; }
@@ -188,11 +195,21 @@ footer p { margin: 0; }
 ::view-transition-group(*) { animation-duration: .55s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .3s; }
 
+/* Wide screens. The poster is as tall as its picture at full width, but never taller than the window, so the whole scene is on screen
+   at once on any wide screen. Each picture is then drawn at the poster's height from the middle out; on wider screens the scenery past its
+   sides (see BLEED in art-poster.js) fills the rest instead of the picture stretching. The fires sit on the picture, measured from its middle. */
+@media (min-width: 900px), (min-aspect-ratio: 1/1) {
+  body { --hero-h: min(var(--h-wide, 50vw), var(--cap)); --art-w: calc(var(--hero-h) * var(--aw, 2)); }
+  .poster { aspect-ratio: auto; height: var(--hero-h); }
+  .poster .layer img { object-fit: cover; }
+  .poster .layer.raster img { object-fit: contain; }
+  .home .poster .fire, .page-game .poster .fire { left: calc(50% + (var(--fx-w) - .5) * var(--art-w)); top: calc(var(--fy-w) * 100%); width: calc(var(--fw-w) * var(--art-w)); }
+  .sky span { background-size: auto var(--hero-h); }
+}
 @media (min-width: 900px) {
-  :root { --edge-h: max(180px, 11.9vw); --tree-h: max(150px, 11.9vw); --band-h: max(130px, 9.4vw); --gut: 130px; }
-  body { font-size: 19px; --hero-h: var(--h-wide, 50vw); }
-  .poster { aspect-ratio: var(--ar-wide); }
-  .home .poster .fire, .page-game .poster .fire { left: var(--fx-w); top: var(--fy-w); width: var(--fw-w); }
+  /* the ridges and the footer grow with the window, up to a size that still looks like land rather than a wall */
+  :root { --edge-h: max(180px, min(11.9vw, 270px)); --tree-h: max(150px, min(11.9vw, 270px)); --band-h: max(130px, min(9.4vw, 220px)); --gut: 130px; }
+  body { font-size: 19px; }
   .lead { padding-top: 16px; padding-bottom: calc(var(--edge-h) + 46px); }
   .band, section.card { padding-bottom: calc(var(--edge-h) - 10px); }
   .marker { width: 44px; height: 64px; left: calc(var(--gut) * -1 + var(--gut) / 2 - 22px); top: 40px; }
@@ -217,12 +234,24 @@ footer p { margin: 0; }
   .policy > h1, .policy > .updated { grid-column: 1 / -1; max-width: none; }
   .policy > h2 { grid-column: 1; margin: 30px 0 0; }
   .policy > h2 + p, .policy > h2 + ul { margin-top: 34px; }
-  footer .camp { height: max(290px, 21.25vw); }
+  footer .camp { height: max(290px, min(21.25vw, 440px)); }
   footer .camp::before { width: 210px; height: 175px; margin-left: -105px; bottom: 18px; }
   footer .foot-fire { bottom: 18px; width: 210px; margin-left: -105px; }
   footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 28px; max-width: none; }
 }
 @media (min-width: 1500px) { :root { --col: 1240px; } body { font-size: 20.5px; } .card h2, .policy h1, .games h2, .game-body h1 { font-size: 150px; } }
+@media (min-width: 2000px) {
+  .games { --edge: url(assets/edge-teal-wide.svg); } .about { --edge: url(assets/edge-cream-wide.svg); } .hello { --edge: url(assets/edge-rust-wide.svg); }
+  .policy::before { background-image: url(assets/band-wide.svg); } footer::before { background-image: url(assets/edge-night-wide.svg); } footer .camp { background-image: url(assets/foot-wide.svg); }
+}
+/* Very wide screens (2560 and ultrawide): a wider column and bigger type, so the page doesn't shrink to a strip down the middle */
+@media (min-width: 2200px) {
+  :root { --col: 1480px; --gut: 150px; } body { font-size: 22.5px; }
+  .card h2, .policy h1, .games h2, .game-body h1 { font-size: 172px; } .lead { font-size: 108px; }
+  .card-text .line { font-size: 21px; } .tag { font-size: 16.5px; } .about > p { font-size: 23.5px; }
+  .card-art { min-height: 400px; } .page-game .hero.game-bar a { font-size: 36px; } .page-game .hero.game-bar img { width: 52px; }
+  .hero.slim a { font-size: 40px; } .hero.slim img { width: 62px; } .policy h2 { font-size: 38px; } footer { font-size: 16.5px; } footer nav a { font-size: 17px; }
+}
 /* Older iPhones (iOS 14 and earlier) don't know aspect-ratio. Without these sizes the poster and the fires would fold away to nothing. */
 @supports not (aspect-ratio: 1 / 1) {
   .poster { height: var(--hero-h); }
@@ -230,11 +259,11 @@ footer p { margin: 0; }
   .page-game .poster .glow-spot { height: 0; padding-bottom: calc(var(--fw-p) / 2.4); }
   footer .foot-fire { height: 125px; }
   .postmark { height: 0; padding-bottom: 18.95%; }
-  @media (min-width: 900px) {
-    .home .poster .fire, .page-game .poster .fire { padding-bottom: calc(var(--fw-w) * 5 / 6); }
-    .page-game .poster .glow-spot { padding-bottom: calc(var(--fw-w) / 2.4); }
-    footer .foot-fire { height: 175px; }
+  @media (min-width: 900px), (min-aspect-ratio: 1/1) {
+    .home .poster .fire, .page-game .poster .fire { padding-bottom: calc(var(--fw-w) * var(--art-w) * 5 / 6); }
+    .page-game .poster .glow-spot { padding-bottom: calc(var(--fw-w) * var(--art-w) / 2.4); }
   }
+  @media (min-width: 900px) { footer .foot-fire { height: 175px; } }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -242,28 +271,33 @@ footer p { margin: 0; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 .home .sky-dusk { background-image: url(assets/sky-phone.svg); } .home .sky-night { background-image: url(assets/night-phone.svg); }
-@media (min-width: 900px) { .home .sky-dusk { background-image: url(assets/sky-wide.svg); } .home .sky-night { background-image: url(assets/night-wide.svg); } }
+@media (min-width: 900px), (min-aspect-ratio: 1/1) { .home .sky-dusk { background-image: url(assets/sky-wide.svg); } .home .sky-night { background-image: url(assets/night-wide.svg); } }
 
 /* Emberstead */
 .game-emberstead { --g-band: #221b45; --g-ink: #eef2fb; --g-accent: #ffc94a; --g-shade: #f0641e; --g-light: #eef2fb; --g-light-ink: #221b45; --g-edge: url(assets/games/emberstead/edge-band.svg); --g-edge-light: url(assets/games/emberstead/edge-light.svg); }
+@media (min-width: 2000px) { .game-emberstead { --g-edge: url(assets/games/emberstead/edge-band-wide.svg); --g-edge-light: url(assets/games/emberstead/edge-light-wide.svg); } }
 .game-emberstead .marker { background-image: url(assets/games/emberstead/marker.svg); }
 .page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-phone.svg); }
 .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-phone.svg); }
-.page-emberstead .poster { --ar-phone: 824 / 1040; --ar-wide: 1600 / 800; --fx-p: 23.03%; --fy-p: 57.58%; --fw-p: 36.47%; --fx-w: 27.32%; --fy-w: 52.88%; --fw-w: 19.37%; }
-@media (min-width: 900px) { .page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-wide.svg); } .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-wide.svg); } }
+.page-emberstead .poster { --ar-phone: 824 / 1040; --fx-p: 23.03%; --fy-p: 57.58%; --fw-p: 36.47%; --fx-w: 0.2732; --fy-w: 0.5288; --fw-w: 0.1937; }
+@media (min-width: 900px), (min-aspect-ratio: 1/1) { .page-emberstead .sky-dusk { background-image: url(assets/games/emberstead/sky-wide.svg); } .page-emberstead .sky-night { background-image: url(assets/games/emberstead/night-wide.svg); } }
 
 /* Leviathan Keeper */
 .game-leviathan-keeper { --g-band: #1b1638; --g-ink: #eef4f4; --g-accent: #6fe3d6; --g-shade: #2f7d86; --g-light: #d7e2ea; --g-light-ink: #1b1638; --g-edge: url(assets/games/leviathan-keeper/edge-band.svg); --g-edge-light: url(assets/games/leviathan-keeper/edge-light.svg); }
+@media (min-width: 2000px) { .game-leviathan-keeper { --g-edge: url(assets/games/leviathan-keeper/edge-band-wide.svg); --g-edge-light: url(assets/games/leviathan-keeper/edge-light-wide.svg); } }
 .game-leviathan-keeper .marker { background-image: url(assets/games/leviathan-keeper/marker.svg); }
 .page-leviathan-keeper { --spark-1: #66e6d8; --spark-2: #d8fffa; --spark-3: #35b9ae; }
 .page-leviathan-keeper .sky-dusk { background-image: url(assets/games/leviathan-keeper/sky-phone.svg); }
 .page-leviathan-keeper .sky-night { background-image: url(assets/games/leviathan-keeper/night-phone.svg); }
-.page-leviathan-keeper .poster { --ar-phone: 824 / 720; --ar-wide: 1600 / 820; --fx-p: 1.94%; --fy-p: 33.97%; --fw-p: 73.06%; --fx-w: 25.94%; --fy-w: 24.22%; --fw-w: 48.13%; }
-@media (min-width: 900px) { .page-leviathan-keeper .sky-dusk { background-image: url(assets/games/leviathan-keeper/sky-wide.svg); } .page-leviathan-keeper .sky-night { background-image: url(assets/games/leviathan-keeper/night-wide.svg); } }
+.page-leviathan-keeper .poster { --ar-phone: 824 / 720; --fx-p: 1.94%; --fy-p: 33.97%; --fw-p: 73.06%; --fx-w: 0.2594; --fy-w: 0.2422; --fw-w: 0.4813; }
+@media (min-width: 900px), (min-aspect-ratio: 1/1) { .page-leviathan-keeper .sky-dusk { background-image: url(assets/games/leviathan-keeper/sky-wide.svg); } .page-leviathan-keeper .sky-night { background-image: url(assets/games/leviathan-keeper/night-wide.svg); } }
 .page-leviathan-keeper .l-near img { animation: marrow-drift 6s ease-in-out infinite alternate; }
 @keyframes marrow-drift { from { transform: translate3d(0, -.6%, 0); } to { transform: translate3d(0, .6%, 0); } }
 .page-game .poster .glow-spot { position: absolute; z-index: 4; display: block; aspect-ratio: 2.4 / 1; left: var(--fx-p); top: var(--fy-p); width: var(--fw-p); }
-@media (min-width: 900px) { .page-game .poster .glow-spot { left: var(--fx-w); top: var(--fy-w); width: var(--fw-w); } }
+@media (min-width: 900px), (min-aspect-ratio: 1/1) { .page-game .poster .glow-spot { left: calc(50% + (var(--fx-w) - .5) * var(--art-w)); top: calc(var(--fy-w) * 100%); width: calc(var(--fw-w) * var(--art-w)); } }
+/* the paper grain is for the printed-ink layers; the painting, and the clouds and motes in front of it, sit above it, so the painting stays clear */
+.page-leviathan-keeper .poster .l-near, .page-leviathan-keeper .poster .l-near ~ .layer { z-index: 4; }
+.page-leviathan-keeper .poster .glow-spot { z-index: 5; }
 button.glow-spot { --spark-reach: 95; margin: 0; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .glow-spot::before { content: ''; position: absolute; top: 18%; right: 12%; bottom: 18%; left: 12%; border-radius: 50%; background: radial-gradient(closest-side, rgba(102, 230, 216, .42), rgba(102, 230, 216, .12) 60%, transparent); mix-blend-mode: screen; opacity: .35; animation: breathe 3.2s ease-in-out infinite alternate; pointer-events: none; }
 @keyframes breathe { to { opacity: .8; } }
