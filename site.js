@@ -24,12 +24,12 @@
   /* 2. The trail: a path through every game's marker, drawn on as you scroll, with a hiker walking it. */
   const games = doc.querySelector('[data-trail]');
   const svgNS = 'http://www.w3.org/2000/svg';
-  let ink, reveal, hole, hikerEl, table = [], total = 0, restLen = 0, lastLen = -1;
+  let ink, reveal, hole, lead, hikerEl, table = [], total = 0, restLen = 0, lastLen = -1;
   if (games) {
     const svg = doc.createElementNS(svgNS, 'svg'); svg.setAttribute('class', 'trail-svg'); svg.setAttribute('aria-hidden', 'true');
-    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask"/><rect class="trail-hole" fill="#000"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
+    svg.innerHTML = `<defs><mask id="trail-reveal" maskUnits="userSpaceOnUse"><path class="trail-mask"/><rect class="trail-hole" fill="#000"/><rect class="trail-lead" fill="#000"/></mask></defs><path class="trail-ink" mask="url(#trail-reveal)"/>`;
     games.prepend(svg);
-    ink = svg.querySelector('.trail-ink'); reveal = svg.querySelector('.trail-mask'); hole = svg.querySelector('.trail-hole');
+    ink = svg.querySelector('.trail-ink'); reveal = svg.querySelector('.trail-mask'); hole = svg.querySelector('.trail-hole'); lead = svg.querySelector('.trail-lead');
     hikerEl = doc.createElement('span'); hikerEl.className = 'hiker'; hikerEl.setAttribute('aria-hidden', 'true'); games.append(hikerEl);
     games.classList.add('trail-live');
   }
@@ -40,9 +40,12 @@
     // the trail runs through the middle of each marker's diamond and ends on top of the last one, where the hiker stops
     const marks = els.map((m, i) => { const r = m.getBoundingClientRect(); return [r.left - box.left + r.width / 2, r.top - box.top + r.height * (i === els.length - 1 ? .05 : .34)]; });
     if (!marks.length) return;
-    const head = games.querySelector('h2'), start = head ? head.getBoundingClientRect().bottom - box.top + (W < 900 ? 52 : 64) : -8;
+    const head = games.querySelector('h2'), start = Math.min(head ? head.getBoundingClientRect().bottom - box.top + (W < 900 ? 52 : 64) : -8, marks[0][1] - 1);
     const gx = marks[0][0], amp = W < 900 ? 9 : 34, pts = [[gx, start]];
-    let prev = pts[0]; marks.forEach((m, i) => { const dy = m[1] - prev[1]; pts.push([gx + amp * (i % 2 ? -1 : 1), prev[1] + dy * .33], [gx - amp * .7 * (i % 2 ? -1 : 1), prev[1] + dy * .68], m); prev = m; });
+    // the step down onto the first marker is a straight drop: it's only a stride long, and a wiggle there left a squiggle around the diamond
+    let prev = pts[0]; marks.forEach((m, i) => { const dy = m[1] - prev[1]; if (i) pts.push([gx + amp * (i % 2 ? -1 : 1), prev[1] + dy * .33], [gx - amp * .7 * (i % 2 ? -1 : 1), prev[1] + dy * .68]); pts.push(m); prev = m; });
+    // and no ink shows above the first diamond's middle once the hiker has stepped off it
+    lead.setAttribute('x', 0); lead.setAttribute('y', (start - 20).toFixed(1)); lead.setAttribute('width', W); lead.setAttribute('height', (marks[0][1] - start + 20).toFixed(1));
     // a smooth curve through the points
     let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
     for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2; d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`; }
