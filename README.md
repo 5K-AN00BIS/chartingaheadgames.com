@@ -11,6 +11,9 @@ The Charting Ahead Games website: a home page, the legal pages, and AdMob's `app
 | `terms.html` | Emberstead terms of service. Play Console asks traders for this URL on each app: `https://chartingaheadgames.com/terms.html` |
 | `cookies.html` | Cookie policy: the website uses none. Update it first if that ever changes. |
 | `refunds.html` | Refund policy for the Remove Ads purchase |
+| `404.html` | The page shown at any address that doesn't exist, with a way home. GitHub Pages shows it at the address that was asked for, so its links and files start from `/`. |
+| `robots.txt`, `sitemap.xml` | Tell search engines which pages exist. Every page with its own address is in the sitemap. |
+| `favicon.ico`, `apple-touch-icon.png` | The browser-tab icon for browsers that can't show `assets/icon.svg`, and the 180-pixel iPhone home-screen icon |
 | `style.css` | The one stylesheet for every page |
 | `site.js` | Optional movement on top of the pages: the poster's layers drift as you scroll, the trail draws on, tapped fires throw sparks. Every page works fully without it. It stores nothing and loads nothing from other sites, and it stays still when a visitor asks for reduced motion. |
 | `fonts/` | League Gothic and Jost, under the SIL Open Font License; each licence sits beside its font |

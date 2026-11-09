@@ -176,6 +176,12 @@ main.game { background: none; }
 .policy li::marker { color: var(--rust); }
 .policy strong { font-weight: 600; }
 .policy a { color: #8a2e13; }
+/* The 404 page: the notice board, for a path that leads nowhere */
+.lost .back { margin: 28px 0 0; }
+.lost .back a { background: var(--night); color: var(--cream); }
+.lost .also { margin: 10px 0 0; }
+.lost .also a { display: inline-flex; align-items: center; min-height: 48px; font-weight: 600; }
+.lost-sign { display: block; width: 200px; height: 146px; margin: 6px 0 20px; background: url(assets/lost-sign.svg) left bottom/contain no-repeat; }
 
 /* The last fire */
 footer { position: relative; padding: 0 var(--pad) 26px; background: var(--grain-l) 0 0/512px 512px, var(--night); color: #d9d2c0; font-size: 15px; text-align: center; }
@@ -234,6 +240,7 @@ footer p { margin: 0; }
   .policy > h1, .policy > .updated { grid-column: 1 / -1; max-width: none; }
   .policy > h2 { grid-column: 1; margin: 30px 0 0; }
   .policy > h2 + p, .policy > h2 + ul { margin-top: 34px; }
+  .lost > .lost-sign { grid-column: 1; grid-row: 3 / span 3; width: 260px; height: 190px; margin: 30px 0 0; }
   footer .camp { height: max(290px, min(21.25vw, 440px)); }
   footer .camp::before { width: 210px; height: 175px; margin-left: -105px; bottom: 18px; }
   footer .foot-fire { bottom: 18px; width: 210px; margin-left: -105px; }
@@ -251,6 +258,7 @@ footer p { margin: 0; }
   .card-text .line { font-size: 21px; } .tag { font-size: 16.5px; } .about > p { font-size: 23.5px; }
   .card-art { min-height: 400px; } .page-game .hero.game-bar a { font-size: 36px; } .page-game .hero.game-bar img { width: 52px; }
   .hero.slim a { font-size: 40px; } .hero.slim img { width: 62px; } .policy h2 { font-size: 38px; } footer { font-size: 16.5px; } footer nav a { font-size: 17px; }
+  .lost > .lost-sign { width: 300px; height: 219px; }
 }
 /* Older iPhones (iOS 14 and earlier) don't know aspect-ratio. Without these sizes the poster and the fires would fold away to nothing. */
 @supports not (aspect-ratio: 1 / 1) {
